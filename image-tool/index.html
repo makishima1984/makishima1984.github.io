@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Fold — converter workbench prototype</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="core.js" defer></script><script src="app.js" defer></script>
+<style>.source-card[data-type="pdf"],.source-card[data-type="video"]{display:none}</style></head>
+<body>
+  <aside class="rail">
+    <a class="brand" href="#workspace" aria-label="Fold workbench"><span class="brand-icon">◩</span> fold<span class="brand-dot">.</span></a>
+    <div class="rail-label">YOUR WORKSPACE</div>
+    <a class="rail-link active" href="#workspace"><span>▦</span> Workbench</a>
+    <a class="rail-link" href="#jobs"><span>☷</span> Output tray <span id="job-count" class="count">0</span></a>
+    <button class="rail-link" id="open-support"><span>⊞</span> Format guide</button>
+    <div class="rail-bottom"><span class="local-dot"></span> Local prototype<p>Files stay in this tab.<br>No account or upload.</p><span class="idea-tag">SHOGO MAKISHIMA TOOLS</span></div>
+  </aside>
+  <main id="workspace">
+    <header class="topbar"><div><span class="breadcrumb">Workspace</span> <span class="slash">/</span> New conversion</div><span class="prototype-label">INTERACTIVE PROTOTYPE</span></header>
+    <section class="intro"><div><p class="eyebrow">A LITTLE LESS FILE FRICTION</p><h1>Make it the right format.</h1><p class="intro-copy">Pick a file. Shape the output. Preview before you save.</p></div><button id="import-button" class="primary">＋ Add an image</button><input id="file-input" type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" hidden></section>
+    <div class="scope-note"><span class="small-mark">i</span><p><strong>A small first slice of a bigger idea.</strong> Image exports work. PDF and video are sample planning flows. <button id="scope-button" class="text-button">See what’s included ↗</button></p></div>
+    <section class="source-section" aria-labelledby="source-heading"><div class="section-heading"><h2 id="source-heading">Start with a sample</h2><span>Original illustrative data • nothing uploaded</span></div>
+      <div class="sources">
+        <button class="source-card selected" data-type="image" aria-pressed="true"><span class="file-icon peach">▧</span><span><strong>Weekend artwork</strong><small>960 × 720 · transparent image</small><em class="real-tag">WORKING EXPORT</em></span><span class="source-arrow">↗</span></button>
+        <button class="source-card" data-type="pdf" aria-pressed="false"><span class="file-icon lavender">≡</span><span><strong>Field notes</strong><small>6 illustrative document pages</small><em>SIMULATED PDF</em></span><span class="source-arrow">↗</span></button>
+        <button class="source-card" data-type="video" aria-pressed="false"><span class="file-icon green">▷</span><span><strong>Studio loop</strong><small>12-second storyboard</small><em>SIMULATED VIDEO</em></span><span class="source-arrow">↗</span></button>
+      </div>
+    </section>
+    <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+    <section class="editor" aria-label="Conversion editor">
+      <div class="preview-area"><div class="editor-top"><div><span class="step">01</span><strong id="preview-title">Preview</strong></div><span id="source-label" class="source-meta"></span></div><div id="preview-content"></div><div class="preview-footer"><span id="preview-footnote"></span><button id="restore" class="text-button">↶ Reset edits</button></div></div>
+      <div class="inspector"><div class="editor-top"><div><span class="step">02</span><strong>Shape your output</strong></div></div><div id="controls"></div><div class="action-area"><div id="output-summary"></div><p id="validation" role="alert"></p><button id="prepare" class="primary full">Create image output <span>↗</span></button><p id="action-note" class="action-note"></p></div></div>
+    </section>
+    <section id="jobs" class="jobs"><div class="section-heading"><div><h2>Output tray <span id="tray-count">0</span></h2><p>Keep originals. Save only what you want.</p></div><button id="clear-jobs" class="text-button" disabled>Clear tray</button></div><div id="job-list" aria-live="polite"></div></section>
+    <footer><span>Made for a quieter workflow.</span><span>Browser session only · refresh clears the tray</span></footer>
+  </main>
+  <dialog id="support-dialog"><div class="dialog-head"><div><p class="eyebrow">HONEST BY DESIGN</p><h2>What this prototype can do</h2></div><button id="close-support" class="icon-button" aria-label="Close format guide">×</button></div><p>The original idea includes videos, images, pages, DOCX, PDFs, GIFs, memes and stickers, with split, merge, trim and editing. This is one proposed starting scenario, not the full product.</p><div class="table-scroll"><table><thead><tr><th>Input / operation</th><th>This prototype</th></tr></thead><tbody><tr><td>PNG, JPEG, WebP → resize, rotate, caption → PNG / JPEG</td><td><b class="real-tag">Works locally</b><br>8 MiB import; 16 MP input/output; max input side 8192 px; max output side 4096 px. Animation and metadata are not preserved.</td></tr><tr><td>PDF → extract pages / merge</td><td><b>Sample plan only</b><br>Six schematic pages plus two-page appendix; downloadable JSON, no PDF output.</td></tr><tr><td>Video → trim → GIF</td><td><b>Sample plan only</b><br>12-second synthetic storyboard; downloadable JSON, no video or GIF output.</td></tr><tr><td>DOCX</td><td>Planned. No import, editing or conversion engine.</td></tr><tr><td>Pages</td><td>Meaning awaits author clarification. Kept separate from DOCX.</td></tr><tr><td>Memes / stickers</td><td>Basic image caption and square-size proposal only; no platform-specific or animated sticker validation.</td></tr></tbody></table></div><p class="dialog-note">Browser-native image rendering may change colour and omit metadata. No fidelity, device performance, parser security or production-readiness claim. This app makes no network requests; downloaded files remain wherever you save them.</p><button id="dialog-done" class="primary">Back to workbench</button></dialog>
+<a href="../" style="position:fixed;left:12px;bottom:12px;z-index:9999;background:#111;color:#f3ead8;font:600 13px system-ui;padding:8px 12px;border-radius:999px;text-decoration:none;opacity:.9">&larr; all tools</a></body></html>
+
