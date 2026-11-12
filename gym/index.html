@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gym Log . sets, reps and personal bests</title>
+<meta name="description" content="Free gym log. Record sets and reps, see your last session and personal best. No login.">
+<style>
+:root{--bg:#0a0909;--ink:#e9dfcd;--dim:#9a9184;--red:#c2262d;--line:#2a2523;--card:#131110;--ok:#5fae6b;--field:#1b1816}
+@media (prefers-color-scheme:light){:root{--bg:#f6f0e4;--ink:#1a1615;--dim:#6b6259;--red:#a81e25;--line:#d9cfbf;--card:#fffaf0;--ok:#2f7d3c;--field:#fff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,"Segoe UI",sans-serif}
+main{max-width:560px;margin:0 auto;padding:20px 16px 90px}h1{font:700 28px/1.1 Georgia,serif;margin:6px 0 2px}h2{font:700 18px Georgia,serif;margin:0 0 10px}
+.eyebrow{color:var(--red);font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase}.dim{color:var(--dim);font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px;margin-top:14px}.big{font:700 44px/1 Georgia,serif;font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.grow{flex:1 1 130px;min-width:0}.between{justify-content:space-between;align-items:center}
+label{display:block;font-size:13px;color:var(--dim);margin-bottom:4px}
+input,select{width:100%;padding:11px 12px;font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:6px}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+button{font:600 15px system-ui,sans-serif;padding:11px 16px;border-radius:6px;border:1px solid var(--line);background:var(--field);color:var(--ink);cursor:pointer;min-height:44px}
+button.primary{background:var(--red);border-color:var(--red);color:#fff}button.link{border:0;background:none;color:var(--dim);padding:6px 8px;min-height:36px;text-decoration:underline}
+button.done{background:var(--ok);border-color:var(--ok);color:#fff}
+ul{list-style:none;margin:0;padding:0}.list li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+.list li>span:first-child{min-width:0;overflow-wrap:anywhere}.num{color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+.bar{height:10px;background:var(--line);border-radius:99px;overflow:hidden;margin:12px 0 6px}.bar i{display:block;height:100%;width:0;background:var(--ok)}.bar i.over{background:var(--red)}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;align-items:end;height:110px;margin-top:8px}
+.week div{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:11px;color:var(--dim)}
+.week b{display:block;width:100%;background:var(--ok);border-radius:4px 4px 0 0;min-height:2px}
+.dots{display:flex;gap:4px}.dots i{width:12px;height:12px;border-radius:50%;background:var(--line)}.dots i.on{background:var(--ok)}
+.back{position:fixed;left:12px;bottom:12px;background:#111;color:#f3ead8;font:600 13px system-ui;padding:8px 12px;border-radius:999px;text-decoration:none}
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Shogo Makishima tools</div>
+  <h1>Gym Log</h1>
+  <p class="dim">Log a set in 5 seconds. See what you lifted last time.</p>
+<section class="card"><h2>Log a set</h2><div class="row"><div class="grow"><label for="ex">Exercise</label><input id="ex" list="exs" maxlength="40" placeholder="Bench press"><datalist id="exs"></datalist></div><div style="flex:0 0 100px"><label for="kg">Weight kg</label><input id="kg" type="number" min="0" max="1000" step="0.5" inputmode="decimal"></div><div style="flex:0 0 80px"><label for="reps">Reps</label><input id="reps" type="number" min="1" max="500" inputmode="numeric"></div><button class="primary" id="add">Add</button></div>
+<p class="dim" id="hint" role="status"></p></section>
+<section class="card"><div class="row between"><h2 style="margin:0">Today</h2><span class="dim" id="vol"></span></div><ul class="list" id="today" style="margin-top:8px"></ul><p class="dim" id="empty">No sets logged today.</p></section>
+<section class="card"><h2>Personal bests</h2><ul class="list" id="pbs"></ul><p class="dim" id="noPb">Your best set for each exercise shows here.</p><p class="dim">Use 0 kg for bodyweight moves. Warm up, and get form checked by a trainer before going heavy.</p></section>
+<section class="card"><h2>Your data</h2><p class="dim">Saved only in this browser. No login, nothing uploaded. Clearing browser data deletes it, so download a backup now and then.</p>
+<div class="row"><button id="export">Download backup</button><button id="wipe">Delete everything</button></div><p class="dim" id="saveMsg" role="status"></p></section>
+</main>
+<a class="back" href="../">&larr; all tools</a>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const dayKey=(d=new Date())=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const ago=n=>{const d=new Date();d.setDate(d.getDate()-n);return d};
+const el=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e};
+const num=(v,max)=>{const n=Number(v);return v!==""&&Number.isFinite(n)&&n>=0?Math.min(n,max):null};
+function load(key,def){try{const s=JSON.parse(localStorage.getItem(key));if(s&&typeof s==="object")return Object.assign(def,s)}catch(e){}return def}
+function store(key,val){try{localStorage.setItem(key,JSON.stringify(val));return true}catch(e){const m=$("saveMsg");if(m)m.textContent="Could not save on this device (storage is blocked or full).";return false}}
+function week(box,fn){box.textContent="";const vals=[];for(let i=6;i>=0;i--)vals.push([ago(i),fn(dayKey(ago(i)))]);const max=Math.max(1,...vals.map(v=>v[1]));
+ vals.forEach(([d,v])=>{const c=el("div"),b=el("b");b.style.height=Math.round(v/max*100)+"%";b.title=String(v);c.append(b,el("span",d.toLocaleDateString(undefined,{weekday:"short"}).slice(0,2)));box.append(c)})}
+function dataButtons(key,getState,reset){
+ $("export").addEventListener("click",()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(getState(),null,1)],{type:"application/json"}));a.download=key+"-backup-"+dayKey()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)});
+ $("wipe").addEventListener("click",function(){if(this.dataset.sure){reset();this.textContent="Delete everything";delete this.dataset.sure}else{this.dataset.sure="1";this.textContent="Tap again to delete all data"}})}
+
+const KEY="gym-log-v1";let s=load(KEY,{sets:[]});if(!Array.isArray(s.sets))s.sets=[];
+const same=(a,b)=>a.toLowerCase()===b.toLowerCase();
+function hint(){const name=$("ex").value.trim(),h=$("hint");if(!name){h.textContent="";return}
+ const past=s.sets.filter(x=>same(x.e,name)&&x.d!==dayKey());if(!past.length){h.textContent="";return}
+ const lastDay=past[past.length-1].d,last=past.filter(x=>x.d===lastDay);h.textContent="Last time ("+lastDay.slice(5)+"): "+last.map(x=>x.k+" kg x "+x.r).join(", ")}
+function render(){const t=dayKey(),mine=s.sets.filter(x=>x.d===t),list=$("today");list.textContent="";
+ mine.forEach(x=>{const li=el("li"),r=el("span","","row"),b=el("button","remove","link");b.addEventListener("click",()=>{s.sets.splice(s.sets.indexOf(x),1);store(KEY,s);render()});
+  r.append(el("span",x.k+" kg x "+x.r,"num"),b);li.append(el("span",x.e),r);list.append(li)});
+ $("empty").hidden=mine.length>0;const vol=mine.reduce((a,x)=>a+x.k*x.r,0);$("vol").textContent=mine.length?mine.length+(mine.length===1?" set . ":" sets . ")+Math.round(vol).toLocaleString()+" kg moved":"";
+ const best={};s.sets.forEach(x=>{const k=x.e.toLowerCase(),b=best[k];if(!b||x.k>b.k||(x.k===b.k&&x.r>b.r))best[k]=x});
+ const pbs=$("pbs");pbs.textContent="";Object.values(best).sort((a,b)=>a.e.localeCompare(b.e)).forEach(x=>{const li=el("li");li.append(el("span",x.e),el("span",x.k+" kg x "+x.r+" . "+x.d.slice(5),"num"));pbs.append(li)});
+ $("noPb").hidden=s.sets.length>0;const dl=$("exs");dl.textContent="";Object.values(best).forEach(x=>dl.append(el("option",x.e)));hint()}
+$("add").addEventListener("click",()=>{const e=$("ex").value.trim(),k=num($("kg").value||"0",1000),r=num($("reps").value,500);
+ if(!e||k===null||!r||r<1){$("hint").textContent="Type an exercise and the reps.";return}
+ const known=s.sets.find(x=>same(x.e,e));s.sets.push({d:dayKey(),e:known?known.e:e.slice(0,40),k:Math.round(k*2)/2,r:Math.round(r)});if(s.sets.length>8000)s.sets.shift();
+ $("reps").value="";store(KEY,s);render()});
+$("ex").addEventListener("input",hint);
+dataButtons(KEY,()=>s,()=>{s={sets:[]};store(KEY,s);render()});render();
+</script>
+</body>
+</html>
