@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Website Maker</title>
+<style>
+  :root { --ink:#1d1d1f; --muted:#5f6368; --line:#e1d8c8; --bg:#fbf7ef; --brand:#b4232c; --green:#1f7a45; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.45 system-ui,"Segoe UI",Roboto,"Noto Sans Devanagari",sans-serif; color:var(--ink); background:var(--bg); }
+  header { background:var(--brand); color:#fff; padding:12px 16px; } header h1 { margin:0; font-size:19px; } header small { opacity:.9; }
+  .grid2 { display:grid; grid-template-columns:minmax(300px,420px) 1fr; gap:16px; padding:16px; align-items:start; }
+  @media (max-width:900px) { .grid2 { grid-template-columns:1fr; } }
+  .panel { background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:14px; }
+  .panel h2 { margin:0 0 8px; font-size:15px; }
+  label.f { display:block; margin:7px 0; font-size:12.5px; color:var(--muted); }
+  #left > .panel > select { width:100%; padding:7px 8px; border:1px solid #c9bfae; border-radius:6px; font:inherit; }
+  label.f input, label.f select, label.f textarea { display:block; width:100%; margin-top:2px; padding:7px 8px; border:1px solid #c9bfae; border-radius:6px; font:inherit; color:var(--ink); }
+  label.f input[type=color] { padding:2px; height:34px; }
+  .row { display:grid; grid-template-columns:1.4fr .8fr 1fr auto; gap:6px; margin:6px 0; align-items:center; }
+  .row input { padding:6px; border:1px solid #c9bfae; border-radius:6px; font:inherit; width:100%; }
+  button { padding:7px 12px; border:1px solid var(--brand); background:var(--brand); color:#fff; border-radius:7px; cursor:pointer; font:inherit; }
+  button.ghost { background:#fff; color:var(--brand); } button.x { border:none; background:none; color:#a00; padding:2px 6px; } button:disabled { opacity:.45; cursor:not-allowed; }
+  .issue { padding:5px 8px; border-radius:6px; margin:4px 0; font-size:13px; } .issue.error { background:#fde8e6; color:#8a1c1c; } .issue.warn { background:#fff4d6; color:#6b4b00; } .ok { background:#e6f4ea; color:#14532d; }
+  iframe { width:100%; height:560px; border:1px solid var(--line); border-radius:10px; background:#fff; }
+  iframe.phone { width:390px; max-width:100%; display:block; margin:0 auto; }
+  .bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:8px 0; }
+  ol { margin:6px 0 6px 18px; padding:0; } textarea.share { width:100%; height:92px; font:inherit; padding:6px; border:1px solid #c9bfae; border-radius:6px; }
+  .muted { color:var(--muted); font-size:12.5px; }
+</style>
+</head>
+<body>
+<header><h1>Website Maker <small>for shops and students: fill the form, download index.html, publish free</small></h1></header>
+<div class="grid2">
+  <div id="left"></div>
+  <div id="right">
+    <div class="panel"><h2>Check before you publish</h2><div id="issues"></div></div>
+    <div class="panel"><h2>Preview</h2>
+      <div class="bar"><button class="ghost" id="bPhone">Phone view</button><button class="ghost" id="bWide">Wide view</button></div>
+      <iframe id="preview" title="Preview" sandbox=""></iframe></div>
+    <div class="panel"><h2>Publish</h2>
+      <label class="f" style="display:flex;gap:8px;align-items:flex-start;color:var(--ink)"><input type="checkbox" id="consent" style="width:auto;margin-top:3px"><span id="consentText">The shop owner has agreed that this phone number and address will be <b>public on the internet</b>.</span></label>
+      <div class="bar"><button id="bDownload" disabled>Download index.html</button><button class="ghost" id="bCopy" disabled>Copy HTML</button><span id="dlNote" class="muted"></span></div>
+      <ol>
+        <li>Download <b>index.html</b> and put it alone in a new folder (one folder per client).</li>
+        <li>Open <b>app.netlify.com/drop</b> and drag that folder onto the page. You get a free link like <i>something.netlify.app</i>.</li>
+        <li>Open the link on your own phone and check every button. Then send it to your client.</li>
+      </ol>
+      <p class="muted">If the link stops working, sign in to Netlify and re-publish the site.</p>
+      <h2 style="margin-top:12px">Message for your client</h2>
+      <label class="f">Paste the live link here<input id="liveUrl" placeholder="https://something.netlify.app"></label>
+      <textarea class="share" id="share" readonly></textarea>
+      <div class="bar"><button class="ghost" id="bShareCopy">Copy message</button></div>
+    </div>
+  </div>
+</div>
+
+<script src="generator.js"></script>
+<script>
+(function () {
+  'use strict';
+  var KEY = 'shopsitemaker.current.v1', CLIENTS = 'shopsitemaker.clients.v1';
+  var P = SSM.PRESETS;
+  function blank() { return { preset: 'sweet', lang: 'en', name: '', tagline: P.sweet.tagline.en, offer: '', whatsapp: '', hours: '', address: '', mapsLink: '', upi: '', madeBy: '', accent: P.sweet.accent, items: JSON.parse(JSON.stringify(P.sweet.items)) }; }
+  function copy(x) { return JSON.parse(JSON.stringify(x)); }
+  function blankP() { var e = SSM.PORTFOLIO_EXAMPLE; return { mode: 'portfolio', name: '', headline: e.headline, about: e.about, city: '', email: '', whatsapp: '', linkedin: '', github: '', resumeLink: '', skills: e.skills, madeBy: '', accent: e.accent, projects: copy(e.projects), experience: copy(e.experience), education: copy(e.education), achievements: copy(e.achievements) }; }
+  function isP() { return D.mode === 'portfolio'; }
+  function lget(k, def) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; } catch (e) { return def; } }
+  function lset(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  var D = lget(KEY, null) || blank(), timer;
+
+  function h(tag, attrs) {
+    var e = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) { var v = attrs[k]; if (k === 'class') e.className = v; else if (/^on/.test(k)) e[k] = v; else if (v === true) e.setAttribute(k, ''); else if (v !== false && v != null) e.setAttribute(k, v); });
+    [].slice.call(arguments, 2).forEach(function add(c) { if (c == null || c === false) return; if (Array.isArray(c)) return c.forEach(add); e.append(c.nodeType ? c : document.createTextNode(String(c))); });
+    return e;
+  }
+  var inputs = {};
+  function field(label, key, type, ph) {
+    var i = h('input', { type: type || 'text', placeholder: ph || '', value: D[key] || '' });
+    i.oninput = function () { D[key] = i.value; changed(); };
+    inputs[key] = i; return h('label', { class: 'f' }, label, i);
+  }
+  function modeSwitch() {
+    var sel = h('select', null, h('option', { value: 'shop' }, 'A website for a shop'), h('option', { value: 'portfolio' }, 'A portfolio site for a student'));
+    sel.value = isP() ? 'portfolio' : 'shop';
+    sel.onchange = function () {
+      if (String(D.name || '').trim() && !confirm('Start a new empty form? Save this one first if you want to keep it.')) { sel.value = isP() ? 'portfolio' : 'shop'; return; }
+      D = sel.value === 'portfolio' ? blankP() : blank(); consent.checked = false; buildForm(); changed();
+    };
+    return h('div', { class: 'panel' }, h('h2', null, 'What are you making?'), sel);
+  }
+  function area(label, key, ph) {
+    var t = h('textarea', { rows: '3', placeholder: ph || '' }); t.value = D[key] || '';
+    t.oninput = function () { D[key] = t.value; changed(); };
+    return h('label', { class: 'f' }, label, t);
+  }
+  function drawList(id, key, fields) {
+    var box = document.getElementById(id); box.textContent = '';
+    var cols = fields.map(function () { return '1fr'; }).join(' ') + ' auto';
+    D[key].forEach(function (it, idx) {
+      box.append(h('div', { class: 'row', style: 'grid-template-columns:' + cols }, fields.map(function (f) {
+        var i = h('input', { value: it[f[0]] || '', placeholder: f[1] }); i.oninput = function () { it[f[0]] = i.value; changed(); }; return i;
+      }), h('button', { class: 'x', type: 'button', title: 'Remove', onclick: function () { D[key].splice(idx, 1); drawList(id, key, fields); changed(); } }, '✕')));
+    });
+  }
+  function listPanel(title, id, key, fields, addLabel) {
+    return h('div', { class: 'panel' }, h('h2', null, title), h('div', { id: id }), h('button', { class: 'ghost', type: 'button', onclick: function () {
+      var row = {}; fields.forEach(function (f) { row[f[0]] = ''; }); D[key].push(row); drawList(id, key, fields); changed();
+    } }, addLabel));
+  }
+  function buildPortfolioForm(left) {
+    var PF = [['name', 'Project'], ['link', 'https:// link'], ['note', 'What it does, with a result']], EF = [['role', 'Role'], ['org', 'Company, dates'], ['note', 'What you did']], SF = [['degree', 'Degree'], ['school', 'College'], ['year', 'Years']], AF = [['text', 'Achievement']];
+    var color = h('input', { type: 'color', value: /^#[0-9a-f]{6}$/i.test(D.accent) ? D.accent : '#12355b' }); color.oninput = function () { D.accent = color.value; changed(); };
+    left.append(
+      h('div', { class: 'panel' }, h('h2', null, '1. The student'), field('Full name', 'name', 'text', 'e.g. Riya Sharma'), field('One line about them', 'headline'), area('About (2 or 3 lines)', 'about'), field('Skills, separated by commas', 'skills', 'text', 'Python, SQL, Excel'), field('City (optional, no full address)', 'city', 'text', 'e.g. Pune'), h('label', { class: 'f' }, 'Colour', color)),
+      h('div', { class: 'panel' }, h('h2', null, '2. How to reach them'), field('Email', 'email', 'email', 'name@example.com'), field('LinkedIn link', 'linkedin', 'url', 'https://www.linkedin.com/in/...'), field('GitHub link (optional)', 'github', 'url', 'https://github.com/...'), field('Resume link (optional)', 'resumeLink', 'url', 'https://drive.google.com/...'), field('WhatsApp (optional, email is safer)', 'whatsapp', 'tel', '98765 43210')),
+      listPanel('3. Projects', 'pProjects', 'projects', PF, '+ Add project'), listPanel('4. Experience', 'pExperience', 'experience', EF, '+ Add job'), listPanel('5. Education', 'pEducation', 'education', SF, '+ Add education'), listPanel('6. Achievements', 'pAchievements', 'achievements', AF, '+ Add achievement'),
+      h('div', { class: 'panel' }, h('h2', null, '7. Your credit (optional)'), field('Shown in the footer', 'madeBy', 'text', 'e.g. Site by YOUR NAME, +91 ...'), h('p', { class: 'muted' }, 'Every site you make is also an advert for you. Put your own name here only if the student agrees.')),
+      h('div', { class: 'panel' }, h('h2', null, 'Saved work (this browser only)'), h('div', { id: 'clients' })));
+    drawList('pProjects', 'projects', PF); drawList('pExperience', 'experience', EF); drawList('pEducation', 'education', SF); drawList('pAchievements', 'achievements', AF);
+    drawClients();
+  }
+  function buildForm() {
+    var left = document.getElementById('left'); left.textContent = ''; inputs = {};
+    left.append(modeSwitch());
+    document.getElementById('consentText').innerHTML = isP() ? 'The student has agreed that these details will be <b>public on the internet</b>, and everything on the page is true.' : 'The shop owner has agreed that this phone number and address will be <b>public on the internet</b>.';
+    if (isP()) { buildPortfolioForm(left); return; }
+    var pre = h('select', null, Object.keys(P).map(function (k) { return h('option', { value: k }, P[k].label); })); pre.value = D.preset;
+    var lang = h('select', null, h('option', { value: 'en' }, 'English'), h('option', { value: 'hi' }, 'हिन्दी (Hindi)'), h('option', { value: 'mr' }, 'मराठी (Marathi)')); lang.value = D.lang;
+    lang.onchange = function () { var old = P[D.preset].tagline[D.lang]; D.lang = lang.value; if (!D.tagline || D.tagline === old) { D.tagline = P[D.preset].tagline[D.lang]; inputs.tagline.value = D.tagline; } changed(); };
+    var fill = h('button', { class: 'ghost', type: 'button' }, 'Fill tagline, items and colour from this type');
+    fill.onclick = function () { D.preset = pre.value; var p = P[D.preset]; D.tagline = p.tagline[D.lang]; D.accent = p.accent; D.items = JSON.parse(JSON.stringify(p.items)); buildForm(); changed(); };
+    var color = h('input', { type: 'color', value: /^#[0-9a-f]{6}$/i.test(D.accent) ? D.accent : '#b4232c' }); color.oninput = function () { D.accent = color.value; changed(); };
+    left.append(
+      h('div', { class: 'panel' }, h('h2', null, '1. The shop'), h('label', { class: 'f' }, 'Type of shop', pre), fill, h('label', { class: 'f' }, 'Language of the website', lang),
+        field('Shop name', 'name', 'text', 'e.g. Mithai Ghar'), field('One line about the shop', 'tagline'), field('Offer banner (optional)', 'offer', 'text', 'e.g. Diwali offer till 8 Nov'), h('label', { class: 'f' }, 'Colour', color)),
+      h('div', { class: 'panel' }, h('h2', null, '2. How customers reach the shop'), field('WhatsApp number', 'whatsapp', 'tel', '98765 43210'), field('Opening hours', 'hours', 'text', '9 am to 9 pm, every day'), field('Address', 'address'),
+        field('Google Maps link (optional, https)', 'mapsLink', 'url', 'https://maps.app.goo.gl/...'), field('UPI ID (optional)', 'upi', 'text', 'name@bank')),
+      h('div', { class: 'panel' }, h('h2', null, '3. Items or services'), h('div', { id: 'items' }), h('button', { class: 'ghost', type: 'button', onclick: function () { D.items.push({ name: '', price: '', note: '' }); drawItems(); changed(); } }, '+ Add item')),
+      h('div', { class: 'panel' }, h('h2', null, '4. Your credit (optional)'), field('Shown in the footer', 'madeBy', 'text', 'e.g. Website by YOUR NAME, +91 ...'), h('p', { class: 'muted' }, 'Every site you make is also an advert for you. Put your own name and number here only if you want that.')),
+      h('div', { class: 'panel' }, h('h2', null, 'Saved work (this browser only)'), h('div', { id: 'clients' })));
+    drawItems(); drawClients();
+  }
+  function drawItems() {
+    var box = document.getElementById('items'); box.textContent = '';
+    D.items.forEach(function (it, idx) {
+      function inp(key, ph) { var i = h('input', { value: it[key] || '', placeholder: ph }); i.oninput = function () { it[key] = i.value; changed(); }; return i; }
+      box.append(h('div', { class: 'row' }, inp('name', 'Item'), inp('price', 'Price'), inp('note', 'Short note'), h('button', { class: 'x', type: 'button', title: 'Remove', onclick: function () { D.items.splice(idx, 1); drawItems(); changed(); } }, '✕')));
+    });
+  }
+  function drawClients() {
+    var box = document.getElementById('clients'); box.textContent = ''; var all = lget(CLIENTS, {});
+    var names = Object.keys(all);
+    var sel = h('select', null, h('option', { value: '' }, names.length ? '(choose a saved one)' : '(none saved yet)'), names.map(function (n) { return h('option', { value: n }, n); }));
+    box.append(h('div', { class: 'bar' }, sel,
+      h('button', { class: 'ghost', type: 'button', onclick: function () { if (sel.value) { D = JSON.parse(JSON.stringify(all[sel.value])); consent.checked = false; buildForm(); changed(); } } }, 'Open'),
+      h('button', { class: 'ghost', type: 'button', onclick: function () { if (sel.value && confirm('Delete ' + sel.value + '?')) { delete all[sel.value]; lset(CLIENTS, all); drawClients(); } } }, 'Delete'),
+      h('button', { type: 'button', onclick: function () { if (!String(D.name).trim()) { alert('Type the name first.'); return; } all[D.name.trim()] = JSON.parse(JSON.stringify(D)); lset(CLIENTS, all); drawClients(); } }, 'Save this'),
+      h('button', { class: 'ghost', type: 'button', onclick: function () { if (confirm('Start a new empty form? (Saved ones stay.)')) { D = isP() ? blankP() : blank(); consent.checked = false; buildForm(); changed(); } } }, 'New')));
+  }
+
+  var html = '', consent = document.getElementById('consent');
+  function changed() { lset(KEY, D); clearTimeout(timer); timer = setTimeout(refresh, 120); }
+  function refresh() {
+    var issues = isP() ? SSM.checkPortfolio(D) : SSM.checkData(D), errs = issues.filter(function (x) { return x.level === 'error'; }), box = document.getElementById('issues'); box.textContent = '';
+    if (!issues.length) box.append(h('div', { class: 'issue ok' }, 'Nothing to fix. Check the preview, then publish.'));
+    issues.forEach(function (x) { box.append(h('div', { class: 'issue ' + x.level }, (x.level === 'error' ? 'Fix: ' : 'Check: ') + x.msg)); });
+    var pv = document.getElementById('preview');
+    if (errs.length) { html = ''; pv.srcdoc = '<p style="font:16px system-ui;padding:20px;color:#555">' + (isP() ? 'The preview appears when the name, one way to reach the student and one project or job are filled in.' : 'The preview appears when the shop name, a valid WhatsApp number and at least one item are filled in.') + '</p>'; }
+    else { html = isP() ? SSM.buildPortfolio(D) : SSM.buildSite(D); pv.srcdoc = html; }
+    var ready = !errs.length && consent.checked;
+    document.getElementById('bDownload').disabled = !ready; document.getElementById('bCopy').disabled = !ready;
+    document.getElementById('dlNote').textContent = errs.length ? 'Fix the red items first.' : (consent.checked ? '' : 'Tick the box above first.');
+    shareText();
+  }
+  consent.onchange = refresh;
+  document.getElementById('bPhone').onclick = function () { document.getElementById('preview').className = 'phone'; };
+  document.getElementById('bWide').onclick = function () { document.getElementById('preview').className = ''; };
+  document.getElementById('bDownload').onclick = function () {
+    var a = h('a', { href: URL.createObjectURL(new Blob([html], { type: 'text/html' })), download: 'index.html' }); document.body.append(a); a.click(); a.remove();
+  };
+  document.getElementById('bCopy').onclick = function () { navigator.clipboard.writeText(html).then(function () { document.getElementById('dlNote').textContent = 'HTML copied.'; }, function () { document.getElementById('dlNote').textContent = 'Copy blocked by the browser: use Download.'; }); };
+  var live = document.getElementById('liveUrl'), share = document.getElementById('share');
+  function shareText() {
+    var u = live.value.trim(), name = (D.name || 'your shop').trim();
+    var link = /^https:\/\//.test(u) ? u : 'https://(paste the live link above)';
+    if (isP()) { share.value = 'Your portfolio is live: ' + link + '\nPut this link on your resume, your LinkedIn profile and in job applications.\nTip: open it in Chrome and choose Print, then Save as PDF, for a clean one-file version.'; return; }
+    share.value = 'Your shop website is live: ' + link + '\nShop: ' + name + '\nTip: put this link in your WhatsApp Business profile, your WhatsApp status and your Google Business Profile.\n\n' +
+      'आपकी दुकान की वेबसाइट चालू हो गई है: ' + link + '\nइसे अपने व्हाट्सऐप बिज़नेस प्रोफ़ाइल, स्टेटस और Google प्रोफ़ाइल में डालें।\n\n' +
+      'तुमच्या दुकानाची वेबसाइट सुरू झाली आहे: ' + link + '\nही लिंक व्हॉट्सअ‍ॅप बिझनेस प्रोफाइल, स्टेटस आणि Google प्रोफाइलमध्ये टाका.';
+  }
+  live.oninput = shareText;
+  document.getElementById('bShareCopy').onclick = function () { navigator.clipboard.writeText(share.value); };
+
+  var demo = new URLSearchParams(location.search).get('demo');
+  if (demo === 'portfolio') { D = blankP(); D.name = 'Riya Sharma (demo)'; D.headline = 'Final-year student looking for a data role'; D.about = 'I like turning messy data into clear decisions.'; D.email = 'riya@example.com'; D.city = 'Pune'; D.projects = [{ name: 'Sales dashboard', link: 'https://github.com/example/sales', note: 'Cut weekly reporting from 3 hours to 20 minutes' }]; D.experience = [{ role: 'Data intern', org: 'Sample Ltd, 2026', note: 'Built monthly reports' }]; D.education = [{ degree: 'B.Tech CSE', school: 'Sample College', year: '2023-2027' }]; D.achievements = [{ text: 'Won a case competition' }]; }
+  else if (demo) { D = blank(); D.name = 'Mithai Ghar (demo)'; D.whatsapp = '98765 43210'; D.hours = '9 am to 9 pm, every day'; D.address = 'Sample Road, Pune'; D.offer = 'Diwali offer: gift boxes from ₹299'; D.items[0].name = 'Mithai gift box'; D.items[1].name = 'Kaju katli, 250 g'; D.items[2].name = 'Namkeen mix, 500 g'; }
+  buildForm(); refresh();
+})();
+</script>
+<a href="../" style="position:fixed;left:12px;bottom:12px;z-index:9999;background:#111;color:#f3ead8;font:600 13px system-ui;padding:8px 12px;border-radius:999px;text-decoration:none;opacity:.9">&larr; all tools</a></body>
+</html>
