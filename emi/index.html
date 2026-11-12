@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMI Calculator . loan EMI, interest and yearly breakup</title>
+<meta name="description" content="Free EMI calculator in rupees. Enter the loan amount, rate and tenure to see the monthly EMI, total interest and a year by year breakup. No login.">
+<link rel="canonical" href="https://makishima1984.github.io/emi/">
+<meta property="og:title" content="EMI Calculator . free, no login">
+<meta property="og:description" content="Free EMI calculator in rupees. Enter the loan amount, rate and tenure to see the monthly EMI, total interest and a year by year breakup. No login.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://makishima1984.github.io/emi/">
+<style>
+:root{--bg:#0a0909;--ink:#e9dfcd;--dim:#9a9184;--red:#c2262d;--line:#2a2523;--card:#131110;--ok:#5fae6b;--field:#1b1816}
+@media (prefers-color-scheme:light){:root{--bg:#f6f0e4;--ink:#1a1615;--dim:#6b6259;--red:#a81e25;--line:#d9cfbf;--card:#fffaf0;--ok:#2f7d3c;--field:#fff}}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,"Segoe UI",sans-serif}
+main{max-width:560px;margin:0 auto;padding:20px 16px 90px}h1{font:700 28px/1.1 Georgia,serif;margin:6px 0 2px}h2{font:700 18px Georgia,serif;margin:0 0 10px}
+.eyebrow{color:var(--red);font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase}.dim{color:var(--dim);font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px;margin-top:14px}.big{font:700 44px/1 Georgia,serif;font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.grow{flex:1 1 130px;min-width:0}.between{justify-content:space-between;align-items:center}
+label{display:block;font-size:13px;color:var(--dim);margin-bottom:4px}
+input,select{width:100%;padding:11px 12px;font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:6px}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+button{font:600 15px system-ui,sans-serif;padding:11px 16px;border-radius:6px;border:1px solid var(--line);background:var(--field);color:var(--ink);cursor:pointer;min-height:44px}
+button.primary{background:var(--red);border-color:var(--red);color:#fff}button.link{border:0;background:none;color:var(--dim);padding:6px 8px;min-height:36px;text-decoration:underline}
+button.done{background:var(--ok);border-color:var(--ok);color:#fff}
+ul{list-style:none;margin:0;padding:0}.list li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}
+.list li>span:first-child{min-width:0;overflow-wrap:anywhere}.num{color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+.bar{height:10px;background:var(--line);border-radius:99px;overflow:hidden;margin:12px 0 6px}.bar i{display:block;height:100%;width:0;background:var(--ok)}.bar i.over{background:var(--red)}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;align-items:end;height:110px;margin-top:8px}
+.week div{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:11px;color:var(--dim)}
+.week b{display:block;width:100%;background:var(--ok);border-radius:4px 4px 0 0;min-height:2px}
+.dots{display:flex;gap:4px}.dots i{width:12px;height:12px;border-radius:50%;background:var(--line)}.dots i.on{background:var(--ok)}
+.back{position:fixed;left:12px;bottom:12px;background:#111;color:#f3ead8;font:600 13px system-ui;padding:8px 12px;border-radius:999px;text-decoration:none}
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Shogo Makishima tools</div>
+  <h1>EMI Calculator</h1>
+  <p class="dim">Monthly EMI, total interest and a year by year breakup.</p>
+<section class="card"><h2>Your loan</h2><div class="row"><div class="grow"><label for="p">Loan amount (rupees)</label><input id="p" type="number" min="1" inputmode="decimal"></div><div class="grow"><label for="r">Interest rate (% a year)</label><input id="r" type="number" min="0" max="60" step="0.05" inputmode="decimal"></div></div>
+<div class="row" style="margin-top:10px"><div class="grow"><label for="n">Tenure</label><input id="n" type="number" min="1" inputmode="numeric"></div><div class="grow"><label for="unit">Counted in</label><select id="unit"><option value="12">Years</option><option value="1">Months</option></select></div><button class="primary" id="go">Calculate</button></div><p class="dim" id="msg" role="status"></p></section>
+<section class="card" id="out" hidden aria-live="polite"><div class="dim">Monthly EMI</div><div class="big" id="emi"></div><ul class="list" style="margin-top:10px"><li><span>Loan amount</span><span class="num" id="oP"></span></li><li><span>Total interest</span><span class="num" id="oI"></span></li><li><span>Total you pay</span><span class="num" id="oT"></span></li></ul><div class="bar"><i id="bar" class="over"></i></div><p class="dim" id="share"></p></section>
+<section class="card" id="yearsCard" hidden><h2>Year by year</h2><ul class="list" id="years"></ul></section>
+<section class="card"><p class="dim" style="margin:0">This uses the standard reducing-balance formula with one payment a month. A real loan can differ: lenders add processing fees and insurance, round the EMI, and can change a floating rate. Check the figures in your own loan agreement. This is arithmetic, not financial advice.</p></section>
+<section class="card"><h2>Your data</h2><p class="dim">Saved only in this browser. No login, nothing uploaded. Clearing browser data deletes it, so download a backup now and then.</p>
+<div class="row"><button id="export">Download backup</button><button id="wipe">Delete everything</button></div><p class="dim" id="saveMsg" role="status"></p></section>
+</main>
+<a class="back" href="../">&larr; all tools</a>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const dayKey=(d=new Date())=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const ago=n=>{const d=new Date();d.setDate(d.getDate()-n);return d};
+const el=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e};
+const num=(v,max)=>{const n=Number(v);return v!==""&&Number.isFinite(n)&&n>=0?Math.min(n,max):null};
+function load(key,def){try{const s=JSON.parse(localStorage.getItem(key));if(s&&typeof s==="object")return Object.assign(def,s)}catch(e){}return def}
+function store(key,val){try{localStorage.setItem(key,JSON.stringify(val));return true}catch(e){const m=$("saveMsg");if(m)m.textContent="Could not save on this device (storage is blocked or full).";return false}}
+function week(box,fn){box.textContent="";const vals=[];for(let i=6;i>=0;i--)vals.push([ago(i),fn(dayKey(ago(i)))]);const max=Math.max(1,...vals.map(v=>v[1]));
+ vals.forEach(([d,v])=>{const c=el("div"),b=el("b");b.style.height=Math.round(v/max*100)+"%";b.title=String(v);c.append(b,el("span",d.toLocaleDateString(undefined,{weekday:"short"}).slice(0,2)));box.append(c)})}
+function dataButtons(key,getState,reset){
+ $("export").addEventListener("click",()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(getState(),null,1)],{type:"application/json"}));a.download=key+"-backup-"+dayKey()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)});
+ $("wipe").addEventListener("click",function(){if(this.dataset.sure){reset();this.textContent="Delete everything";delete this.dataset.sure}else{this.dataset.sure="1";this.textContent="Tap again to delete all data"}})}
+
+const KEY="emi-calc-v1";let s=load(KEY,{p:"",r:"",n:"",unit:"12"});
+const rs=v=>"₹"+Math.round(v).toLocaleString("en-IN");
+function calc(save){const P=num($("p").value,1e11),R=num($("r").value,60),N=num($("n").value,1200),u=$("unit").value==="1"?1:12,m=$("msg"),n=N===null?0:Math.round(N*u);
+ if(P===null||P<1||R===null||n<1||n>600){$("out").hidden=true;$("yearsCard").hidden=true;m.textContent=save?"Enter the amount, a rate from 0 to 60, and a tenure of up to 50 years.":"";return}
+ m.textContent="";const i=R/1200,g=Math.pow(1+i,n),emi=i===0?P/n:P*i*g/(g-1),total=emi*n,int=total-P;
+ $("emi").textContent=rs(emi);$("oP").textContent=rs(P);$("oI").textContent=rs(int);$("oT").textContent=rs(total);$("bar").style.width=(int/total*100).toFixed(1)+"%";
+ $("share").textContent="Interest is "+(int/total*100).toFixed(1)+"% of everything you pay, over "+n+(n===1?" month":" months")+".";
+ const ys=$("years");ys.textContent="";let bal=P,yi=0,yp=0;
+ for(let k=1;k<=n;k++){const it=bal*i,pr=emi-it;bal-=pr;yi+=it;yp+=pr;if(k%12===0||k===n){const li=el("li"),a=el("span");a.append(el("div","Year "+Math.ceil(k/12)),el("div","principal "+rs(yp)+" . interest "+rs(yi),"dim"));li.append(a,el("span","left "+rs(Math.max(0,bal)),"num"));ys.append(li);yi=0;yp=0}}
+ $("out").hidden=false;$("yearsCard").hidden=false;if(save){s={p:$("p").value,r:$("r").value,n:$("n").value,unit:String(u)};store(KEY,s)}}
+function fill(){$("p").value=typeof s.p==="string"?s.p.slice(0,14):"";$("r").value=typeof s.r==="string"?s.r.slice(0,6):"";$("n").value=typeof s.n==="string"?s.n.slice(0,5):"";$("unit").value=s.unit==="1"?"1":"12"}
+$("go").addEventListener("click",()=>calc(true));
+fill();dataButtons(KEY,()=>s,()=>{s={p:"",r:"",n:"",unit:"12"};store(KEY,s);fill();calc(false)});calc(false);
+</script>
+</body>
+</html>
