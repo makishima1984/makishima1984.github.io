@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://makishima1984.github.io/sitemap.xml
