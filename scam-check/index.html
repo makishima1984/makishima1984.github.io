@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Pause — Scam awareness prototype</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="engine.js"></script>
+  <script defer src="data.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="#check" aria-label="Pause home"><span class="brand-mark" aria-hidden="true"><i></i><i></i></span>pause<span class="brand-period">.</span></a>
+    <nav aria-label="Main navigation">
+      <button class="nav-button active" data-view="check" aria-current="page">Check a message</button>
+      <button class="nav-button" data-view="library">Pattern library <span class="nav-count">5</span></button>
+      <button class="nav-button" data-view="about">About this prototype</button>
+    </nav>
+    <span class="prototype-tag">FREE EARLY VERSION</span>
+  </header>
+  <main id="main">
+    <section id="view-check" class="view" aria-labelledby="check-heading">
+      <div class="hero">
+        <div><p class="eyebrow"><span></span> A LITTLE SPACE BEFORE YOU ACT</p><h1 id="check-heading">A moment of pause.<br><em>A clearer next step.</em></h1><p class="hero-description">Look for clues in a suspicious message.<br>Understand the pattern. Verify independently.</p></div>
+        <div class="hero-note"><span class="asterisk" aria-hidden="true">✳</span><p>Clues, not certainty.</p><small>This page explains possible patterns.<br>It cannot prove a message is safe.</small></div>
+      </div>
+      <div class="workspace">
+        <div class="input-column">
+          <section class="card input-card" aria-labelledby="input-heading">
+            <div class="section-heading"><span class="step">01</span><h2 id="input-heading">What did you receive?</h2><button id="clear" class="text-button">Clear</button></div>
+            <label for="message">Message or URL <span>English text only</span></label>
+            <textarea id="message" rows="8" maxlength="6000" spellcheck="false" autocomplete="off" placeholder="Paste a message here. Remove names, account numbers, passwords and codes first." aria-describedby="privacy-note character-count"></textarea>
+            <div class="input-meta"><span id="input-kind" class="sample-label">YOUR INPUT</span><span id="character-count">0 / 6,000</span></div>
+            <p id="sample-note" class="sample-note"></p>
+            <p id="form-error" class="error" role="alert" hidden></p>
+            <button id="analyze" class="primary-button">Review the clues <span aria-hidden="true">↗</span></button>
+            <p id="privacy-note" class="privacy-note"><span aria-hidden="true">◈</span> Processed in this page. No message storage or upload.</p>
+          </section>
+          <section class="samples" aria-labelledby="sample-heading"><h3 id="sample-heading">Or explore a made-up example <span>SYNTHETIC</span></h3><div id="sample-buttons" class="sample-buttons"></div></section>
+          <div class="scope-note"><span aria-hidden="true">ⓘ</span><p><strong>A small starting point.</strong> Five patterns, English keyword rules, no live checks. All examples are invented; detection accuracy is unmeasured.</p></div>
+        </div>
+        <section class="card result-card" aria-labelledby="result-heading">
+          <div class="section-heading"><span class="step">02</span><h2 id="result-heading">Make sense of it</h2><span class="local-tag">LOCAL RULES</span></div>
+          <div id="result" aria-live="polite"></div>
+        </section>
+      </div>
+      <section class="learning-strip"><div><p class="eyebrow">RECOGNITION IS A SKILL</p><h2>Learn the story behind the request.</h2><p>Explore five common setups and ways to verify them.</p></div><button class="outline-button" data-view="library">Explore the pattern library <span aria-hidden="true">→</span></button></section>
+    </section>
+    <section id="view-library" class="view" hidden aria-labelledby="library-heading">
+      <div class="page-heading"><p class="eyebrow">THE PATTERN LIBRARY / 5 EXPLAINERS</p><h1 id="library-heading">Know the setup.<br><em>Recognize the pressure.</em></h1><p>Defensive education based on official consumer guidance.<br>A small selected catalog, not a complete or live scam database.</p></div>
+      <div class="library-toolbar"><label class="search-label" for="library-search">Search patterns<input id="library-search" type="search" placeholder="Try “payment”, “account”, “access”…"></label><label for="category">Category<select id="category"><option value="all">All categories</option><option>Accounts</option><option>Payments</option><option>Work</option><option>Devices</option></select></label><span id="library-count" role="status"></span></div>
+      <div id="library-grid" class="library-grid"></div>
+      <p class="catalog-note">Source review: 10–11 October 2026. FTC sources use a US consumer context; their reporting routes are not worldwide services. These explainers are paraphrases, and the local matching rules are a design proposal.</p>
+    </section>
+    <section id="view-about" class="view" hidden aria-labelledby="about-heading">
+      <div class="page-heading"><p class="eyebrow">SHOGO MAKISHIMA TOOLS</p><h1 id="about-heading">An honest prototype.<br><em>A broader ambition.</em></h1><p>The full intent is a list of scams, how they work, and detection.<br>This interactive slice explores one possible beginning.</p></div>
+      <div class="about-grid">
+        <section class="card about-card"><span class="step">01</span><h2>What works here</h2><p>Paste or type English text; review exact keyword matches; inspect parsed URL hostnames; explore five sourced pattern explainers; build a verification checklist; download a text review without your message.</p><p>All processing is local JavaScript. There are no external scripts, analytics, accounts, browser storage or network lookups. Clear removes the current input and result from the page. Refresh resets it to a synthetic sample.</p></section>
+        <section class="card about-card"><span class="step">02</span><h2>What it cannot establish</h2><p>The rules cannot authenticate a sender, classify all scams, inspect attachments, listen to calls, read your inbox, inspect a transaction or check a live URL reputation list.</p><p>There is no trained model or validated probability score. Precision, recall, false positives and abstention performance have not been measured on an independently labelled dataset. Quotes, negation, ordinary payments, unfamiliar wording and other languages can defeat these rules.</p></section>
+        <section class="card about-card"><span class="step">03</span><h2>Sources and proposed scope</h2><p>Audience proposal: a person reviewing a message before responding. English only; educational guidance draws on US FTC sources. No local reporting service is connected.</p><p>The supplied baseline and completed research handoff propose pasted-message and URL triage. The handoff arrived during this build and was reviewed before completion. Choosing this small scenario does not replace the full idea.</p><p><a href="https://consumer.ftc.gov/articles/how-recognize-avoid-phishing-scams" target="_blank" rel="noopener noreferrer">FTC: recognizing phishing ↗</a></p></section>
+        <section class="card about-card"><span class="step">04</span><h2>URL checks are unavailable</h2><p>Addresses are parsed locally and shown as plain text. No pasted address is opened or sent to a provider. Paths, queries, fragments and user information are omitted from the URL detail display.</p><p>Google documents Safe Browsing as a URL threat-list service for non-commercial use, with Web Risk for commercial uses. Neither is connected here. A URL lookup alone would not verify an entire conversation.</p><p><a href="https://developers.google.com/safe-browsing/" target="_blank" rel="noopener noreferrer">Google: Safe Browsing overview ↗</a></p></section>
+      </div>
+      <section class="card provider-lab" aria-labelledby="provider-heading"><div><p class="eyebrow">DESIGN SIMULATION / NO LIVE INTEGRATION</p><h2 id="provider-heading">What would a URL result actually mean?</h2><p>Explore invented provider states. These fixtures are separate from your message and cannot check a real URL.</p><label for="provider-state">Simulated provider state</label><select id="provider-state"><option value="not_configured">Not configured</option><option value="matched">Threat-list match (simulated)</option><option value="no_known_match">No known match (simulated)</option><option value="unavailable">Unavailable (simulated)</option><option value="expired">Expired evidence (simulated)</option></select></div><div id="provider-fixture" aria-live="polite"></div></section>
+      <div class="intent-note"><strong>Preserved source record</strong><p>“5- Lists of scam and ways to do it<br>detection”</p><small>Mechanisms are presented for recognition, prevention and recovery. This is a prototype, not a production detection service.</small></div>
+    </section>
+  </main>
+  <footer><span class="footer-brand">pause.</span><p>A useful pause before the next click.</p><span>LOCAL PROTOTYPE · ENGLISH · 5 PATTERNS</span></footer>
+  <dialog id="pattern-dialog" aria-labelledby="dialog-title"><button id="close-dialog" class="dialog-close" aria-label="Close pattern">×</button><div id="dialog-content"></div></dialog>
+  <div id="toast" role="status" class="toast" hidden></div>
+  <noscript>This prototype needs JavaScript for local rules and navigation. Nothing is uploaded.</noscript>
+<a href="../" style="position:fixed;left:12px;bottom:12px;z-index:9999;background:#111;color:#f3ead8;font:600 13px system-ui;padding:8px 12px;border-radius:999px;text-decoration:none;opacity:.9">&larr; all tools</a></body>
+</html>
