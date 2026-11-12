@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f5ef">
+  <title>Copy / Try — A little practice, a little progress</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="rhythm.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#practice">Skip to practice</a>
+  <aside class="sidebar">
+    <a class="brand" href="#"><span class="brand-icon" aria-hidden="true">c<span>↗</span></span>copy<span class="slash">/</span>try</a>
+    <div class="workspace-label">YOUR PRACTICE ROOM</div>
+    <a class="side-link active" href="#practice"><span aria-hidden="true">◉</span> Rhythm studio <span class="tiny-pill">01</span></a>
+    <a class="side-link" href="#journal"><span aria-hidden="true">▤</span> Practice journal</a>
+    <button class="side-link" id="about-open"><span aria-hidden="true">◇</span> The bigger idea</button>
+    <div class="sidebar-note"><div class="little-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><p>Watch closely.<br>Give it a try.<br>Make it your own.</p><span>ONE SMALL PRACTICE AT A TIME</span></div>
+    <div class="local-stamp"><span class="status-dot"></span> Local prototype <span>Shogo Makishima tools</span></div>
+  </aside>
+  <main>
+    <header class="topbar"><span>Explore <span class="muted">/</span> <strong>Rhythm studio</strong></span><button id="scope-open" class="outline-pill">About this prototype <span aria-hidden="true">↗</span></button></header>
+    <section class="intro">
+      <div><div class="eyebrow">LEARN BY DOING · EXPERIMENT 01</div><h1>Start small.<br>Find your rhythm<span>.</span></h1><p>Listen to a short pattern. Copy it with a few taps.<br>Notice one thing, then give it another try.</p></div>
+      <div class="intro-art" aria-hidden="true"><div class="art-ring"></div><span class="art-line"></span><i class="art-dot a"></i><i class="art-dot b"></i><i class="art-dot c"></i><i class="art-dot d"></i><span class="art-caption">a little practice → a little discovery</span></div>
+    </section>
+    <section class="exercise-picker" aria-label="Choose an original sample exercise"><div class="section-caption">PICK A SMALL CHALLENGE <span>Original sample exercises</span></div><div class="pattern-options" id="pattern-options"></div></section>
+    <section id="practice" class="studio" aria-labelledby="studio-title">
+      <div class="studio-heading"><div><span class="eyebrow">TODAY’S PRACTICE</span><h2 id="studio-title">Four steady taps</h2></div><span class="session-state" id="session-state">Ready when you are</span></div>
+      <ol class="journey" aria-label="Practice steps"><li id="step-listen" class="current"><span>1</span> Listen & notice</li><li id="step-try"><span>2</span> Copy & try</li><li id="step-reflect"><span>3</span> Reflect & repeat</li></ol>
+      <div class="studio-grid">
+        <div class="demo-panel">
+          <div class="panel-label"><span>THE EXAMPLE</span><span class="audio-label">Original generated tones</span></div>
+          <p id="pattern-description" class="pattern-description"></p>
+          <div class="rhythm-frame"><div class="beat-axis"><span>1</span><span>2</span><span>3</span><span>4</span></div><div class="rhythm-track" id="target-track" aria-label="Target rhythm"></div><div class="recall-mask" id="recall-mask" hidden><span aria-hidden="true">◌</span><strong>Your memory takes the lead.</strong><span>The pattern returns after your attempt.</span></div><div class="track-caption" id="track-caption">Each orange dot is one tap.</div></div>
+          <div class="play-controls"><button id="play-demo" class="dark-button"><span aria-hidden="true">▶</span> Listen to the example</button><label class="sound-switch"><input id="sound-enabled" type="checkbox" checked> Sound</label></div>
+          <div class="tempo-control"><label for="tempo">Practice pace <strong><span id="tempo-value">80</span> BPM</strong></label><input type="range" id="tempo" min="50" max="120" step="5" value="80"><div><span>Take it slow</span><span>Pick up the pace</span></div></div>
+          <p id="audio-notice" class="small-note">Sound plays when you choose Listen. The dots work silently too.</p>
+        </div>
+        <div class="try-panel">
+          <div class="panel-label"><span>YOUR TURN</span><span class="live-badge"><i></i> Browser input</span></div>
+          <fieldset class="mode-control"><legend class="sr-only">Practice mode</legend><label><input type="radio" name="mode" value="copy" checked><span>Copy the pattern</span></label><label><input type="radio" name="mode" value="recall"><span>Try from memory</span></label></fieldset>
+          <button id="tap-pad" class="tap-pad" disabled><span id="tap-pad-symbol" aria-hidden="true">✦</span><strong id="tap-pad-title">A little courage.<br>A few taps.</strong><span id="tap-pad-hint">Start your turn below</span><kbd>SPACE</kbd></button>
+          <div class="attempt-controls"><button id="start-attempt" class="orange-button">Start your turn <span aria-hidden="true">↗</span></button><button id="finish-attempt" class="text-button" hidden>Finish now</button><button id="cancel-attempt" class="text-button" hidden>Cancel</button></div>
+          <p id="attempt-status" class="small-note" role="status" aria-live="polite">Use the pad or Space. Timing begins with your first tap.</p>
+        </div>
+      </div>
+      <div class="studio-footer"><span><span aria-hidden="true">ⓘ</span> Timing practice only · no microphone or camera</span><button id="sample-attempt" class="text-button">Explore a sample result <span aria-hidden="true">→</span></button></div>
+    </section>
+    <section id="result" class="result-card" hidden aria-labelledby="result-title" tabindex="-1">
+      <div class="result-heading"><div><span id="result-origin" class="eyebrow"></span><h2 id="result-title">A closer look at your attempt.</h2></div><span class="result-kind" id="result-kind"></span></div>
+      <p id="result-summary"></p>
+      <div class="result-grid"><div class="comparison"><div class="comparison-label"><span class="legend-dot target"></span> Example <span class="comparison-end" id="result-tempo"></span></div><div id="compare-target" class="compare-track"></div><div class="comparison-label"><span class="legend-dot attempt"></span> <span id="comparison-input-label">Your taps</span></div><div id="compare-attempt" class="compare-track"></div><p class="small-note">Aligned at the first tap. Starting delay is ignored.</p></div><div class="next-step"><span class="eyebrow">ONE THING TO TRY</span><p id="next-step-text"></p><button id="retry-attempt" class="dark-button">Try it again <span aria-hidden="true">↗</span></button></div></div>
+      <details class="timing-details"><summary>See the timing evidence <span aria-hidden="true">+</span></summary><p class="small-note">Taps are paired by order. Equal counts can still contain a missed tap and an extra tap. Device latency is uncalibrated; these are browser input observations, not a measure of skill or learning.</p><div class="table-wrap"><table><caption class="sr-only">Observed tap timing relative to the first tap</caption><thead><tr><th>Tap</th><th>Example</th><th>Observed</th><th>Difference</th></tr></thead><tbody id="evidence-rows"></tbody></table></div></details>
+      <div class="reflection"><label for="reflection-note">What will you try differently? <span>Optional · saved with this attempt on this browser</span></label><div><input id="reflection-note" maxlength="180" placeholder="e.g. Leave a little more space before the last tap"><button id="save-note" class="outline-button">Save note</button></div><span id="note-status" class="small-note" role="status"></span></div>
+    </section>
+    <section class="journal" id="journal"><div class="section-heading"><div><span class="eyebrow">NOTICE THE LITTLE THINGS</span><h2>Your practice journal</h2></div><button id="clear-history" class="text-button" hidden>Clear journal</button></div><p id="storage-notice" class="small-note">Up to 12 completed attempts stay in this browser. Nothing is uploaded.</p><div id="journal-list"></div></section>
+    <section class="vision-strip"><div class="vision-icon" aria-hidden="true">↗</div><div><h3>One small rhythm. A much bigger idea.</h3><p>Copy and try could span singing, instruments, sports and anything else.<br> This first experiment explores timing. Each future skill needs its own teaching and feedback.</p></div><button id="vision-open" class="text-button">Explore the vision <span aria-hidden="true">→</span></button></section>
+    <footer class="page-footer"><span>copy / try <span class="muted">· by Shogo Makishima</span></span><span>Made for experimenting. No mastery claims.</span></footer>
+  </main>
+  <dialog id="about-dialog"><button id="about-close" class="dialog-close" aria-label="Close about this prototype">×</button><span class="eyebrow">IDEA 18 · PROTOTYPE STAGE</span><h2>Learn by copying.<br>Keep trying.</h2><p>The author’s idea is broad: learn anything by copying and trying, including singing, instruments, sports and anything else.</p><h3>What this version explores</h3><p>A proposed beginner rhythm scenario: listen to an original generated pattern, copy it with taps, inspect browser timing, and retry. Three small exercises, adjustable pace, a short recall mode and a local journal are functional.</p><h3>What the feedback means</h3><p>Timing is measured relative to your first tap. It ignores starting delay and pairs taps in order. The comparison is a rough practice aid; input and audio latency are not calibrated. A good match here does not prove retention, transfer or mastery.</p><h3>What is sample or unavailable</h3><p>All exercises are original sample content. “Explore a sample result” uses labelled synthetic timings and is excluded from your journal. There is no microphone, camera, AI coach, teacher review, cloud account, external lesson library, or singing/sports assessment.</p><h3>Research and scope</h3><p>This slice follows the supplied context and the research handoff dated 11 October 2026. The demonstration → attempt → feedback loop and choice of rhythm practice are design proposals, not an author-confirmed app specification. A future working application needs device timing validation and a study of learning outcomes.</p><p class="dialog-footnote">Your entries stay in this browser when storage is available. Clear the journal at any time. No external services, fonts or tracking are used.</p></dialog>
+<a href="../" style="position:fixed;left:12px;bottom:12px;z-index:9999;background:#111;color:#f3ead8;font:600 13px system-ui;padding:8px 12px;border-radius:999px;text-decoration:none;opacity:.9">&larr; all tools</a></body>
+</html>
