@@ -1,0 +1,7 @@
+"use strict";
+const C="tools-202611131416",PRE=["/", "/buy-or-wait/", "/calories/", "/cricket/", "/cycle/", "/day-repair/", "/emi/", "/expenses/", "/favicon.ico", "/flashcards/", "/games/", "/games/app.js", "/games/game-core.js", "/games/styles.css", "/gym/", "/habits/", "/icon-192.png", "/image-tool/", "/image-tool/app.js", "/image-tool/core.js", "/image-tool/style.css", "/manifest.json", "/medicine/", "/mood/", "/reading/", "/rhythm/", "/rhythm/app.js", "/rhythm/rhythm.js", "/rhythm/styles.css", "/savings/", "/scam-check/", "/scam-check/app.js", "/scam-check/data.js", "/scam-check/engine.js", "/scam-check/styles.css", "/shop-site-maker/", "/shop-site-maker/generator.js", "/sip/", "/sleep/", "/study/", "/today/", "/watchlist/", "/water/", "/weight/"];
+self.addEventListener("install",e=>{e.waitUntil(caches.open(C).then(c=>Promise.allSettled(PRE.map(u=>c.add(u)))).then(()=>self.skipWaiting()))});
+self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
+self.addEventListener("fetch",e=>{const r=e.request;if(r.method!=="GET"||new URL(r.url).origin!==location.origin)return;
+ e.respondWith(fetch(r).then(res=>{if(res.ok){const copy=res.clone();caches.open(C).then(c=>c.put(r,copy))}return res})
+  .catch(()=>caches.match(r,{ignoreSearch:true}).then(m=>m||Response.error())))});

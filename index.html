@@ -6,6 +6,10 @@
 <title>Shogo Makishima . free tools</title>
 <meta name="description" content="25 free tools that run in your browser: calorie, period, expense, habit, sleep and mood trackers, a watchlist, flashcards, a cricket scorer, EMI and SIP calculators. No login, nothing uploaded.">
 <link rel="canonical" href="https://makishima1984.github.io/">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a0909">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <meta property="og:title" content="Free tools that run in your browser">
 <meta property="og:description" content="25 free trackers, calculators and small tools. No login. Your data stays on your own device.">
 <meta property="og:type" content="website">
@@ -46,10 +50,12 @@
   <h1>Free tools that run in your browser</h1>
   <p class="lead">No login. Nothing is uploaded: what you type stays on your own device. These are early versions, so tell me what breaks.</p>
   <div class="rule"></div>
+  <p id="installRow" hidden style="margin:0 0 24px"><button id="install" type="button" style="padding:12px 18px;font:700 15px system-ui,sans-serif;color:#fff;background:var(--red);border:0;border-radius:6px;cursor:pointer">Install as an app</button> <span class="lead" style="font-size:15px">Free. Works with no internet.</span></p>
   <div class="find"><label for="q">Find a tool</label><input id="q" type="search" autocomplete="off" placeholder="sleep, money, anime, cricket"></div>
   <p class="lead" id="none" hidden style="margin-top:20px">No tool matches that. Try a shorter word.</p>
 
   <div class="group"><h2>Track your day</h2><ul>
+    <li><a href="today/"><h3>Today</h3><p>Everything you logged today from all the trackers on one screen, and one backup file for all of it.</p><span class="tag">See your day</span></a></li>
     <li><a href="habits/"><h3>Habit Tracker</h3><p>Tick your habits every day and keep the streak alive.</p><span class="tag">Build habits</span></a></li>
     <li><a href="water/"><h3>Water Tracker</h3><p>One tap per glass, with a daily goal and a 7-day view.</p><span class="tag">Drink water</span></a></li>
     <li><a href="sleep/"><h3>Sleep Log</h3><p>Enter when you slept and woke. See your hours and your 7-day average.</p><span class="tag">Track sleep</span></a></li>
@@ -97,7 +103,7 @@
     <div class="eyebrow">How these work</div>
     <h2>Your data never leaves your device</h2>
     <p>There is no account and no server. Each tool saves what you type inside your own browser, and the trackers have buttons to download a backup or delete everything.</p>
-    <p>To keep a tool on your phone, open it, then use your browser menu and choose "Add to Home screen".</p>
+    <p>To keep the tools on your phone, use the "Install as an app" button at the top when your browser shows it, or open your browser menu and choose "Add to Home screen". After the first visit the tools open with no internet.</p>
     <p>Clearing your browser data deletes what you saved, so download a backup now and then.</p>
   </section>
   <section class="note">
@@ -117,6 +123,11 @@
  q.addEventListener("input",function(){var w=q.value.trim().toLowerCase(),any=false;
   document.querySelectorAll(".group").forEach(function(g){var shown=0;g.querySelectorAll("li").forEach(function(li){var ok=!w||li.textContent.toLowerCase().indexOf(w)>=0;li.hidden=!ok;if(ok)shown++});g.hidden=shown===0;if(shown)any=true});
   none.hidden=any})})();
+(function(){var row=document.getElementById("installRow"),btn=document.getElementById("install"),ev=null;
+ if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(function(){});
+ window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();ev=e;row.hidden=false});
+ btn.addEventListener("click",function(){if(!ev)return;ev.prompt();ev=null;row.hidden=true});
+ window.addEventListener("appinstalled",function(){row.hidden=true})})();
 </script>
 </body>
 </html>
