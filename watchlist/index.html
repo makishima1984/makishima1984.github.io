@@ -10,6 +10,9 @@
 <meta property="og:description" content="Free watchlist for anime, series and movies. Track episodes, finished titles and your ratings. No login, no account.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://makishima1984.github.io/watchlist/">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0a0909">
+<link rel="icon" href="/icon-192.png">
 <style>
 :root{--bg:#0a0909;--ink:#e9dfcd;--dim:#9a9184;--red:#c2262d;--line:#2a2523;--card:#131110;--ok:#5fae6b;--field:#1b1816}
 @media (prefers-color-scheme:light){:root{--bg:#f6f0e4;--ink:#1a1615;--dim:#6b6259;--red:#a81e25;--line:#d9cfbf;--card:#fffaf0;--ok:#2f7d3c;--field:#fff}}
@@ -44,6 +47,8 @@ ul{list-style:none;margin:0;padding:0}.list li{display:flex;justify-content:spac
 <section class="card"><h2>Add a title</h2><div class="row"><div class="grow"><label for="title">Title</label><input id="title" maxlength="80"></div><div style="flex:0 0 120px"><label for="kind">Type</label><select id="kind"><option>Anime</option><option>Series</option><option>Movie</option><option>Other</option></select></div></div>
 <div class="row" style="margin-top:10px"><div class="grow"><label for="eps">Episodes (optional)</label><input id="eps" type="number" min="1" max="9999" inputmode="numeric"></div><div class="grow"><label for="st">Add to</label><select id="st"><option value="0">Plan to watch</option><option value="1">Watching</option><option value="2">Finished</option></select></div><button class="primary" id="add">Add</button></div><p class="dim" id="msg" role="status"></p>
 <p class="dim">You type the titles yourself. This page has no catalogue and looks nothing up online.</p></section>
+<section class="card"><h2>Share it</h2><p class="dim">Makes a picture on your own device. Nothing is uploaded, and it is only sent where you choose.</p>
+<button class="primary" id="share">Make a picture to share</button><p class="dim" id="shareMsg" role="status"></p></section>
 <section class="card"><h2>Your data</h2><p class="dim">Saved only in this browser. No login, nothing uploaded. Clearing browser data deletes it, so download a backup now and then.</p>
 <div class="row"><button id="export">Download backup</button><button id="wipe">Delete everything</button></div><p class="dim" id="saveMsg" role="status"></p></section>
 </main>
@@ -51,6 +56,7 @@ ul{list-style:none;margin:0;padding:0}.list li{display:flex;justify-content:spac
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
+if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
 const dayKey=(d=new Date())=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const ago=n=>{const d=new Date();d.setDate(d.getDate()-n);return d};
 const el=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e};
@@ -62,6 +68,16 @@ function week(box,fn){box.textContent="";const vals=[];for(let i=6;i>=0;i--)vals
 function dataButtons(key,getState,reset){
  $("export").addEventListener("click",()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(getState(),null,1)],{type:"application/json"}));a.download=key+"-backup-"+dayKey()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)});
  $("wipe").addEventListener("click",function(){if(this.dataset.sure){reset();this.textContent="Delete everything";delete this.dataset.sure}else{this.dataset.sure="1";this.textContent="Tap again to delete all data"}})}
+function shareCard(title,lines,slug){const c=document.createElement("canvas");c.width=1080;c.height=1350;const x=c.getContext("2d"),m=$("shareMsg");
+ x.fillStyle="#0a0909";x.fillRect(0,0,1080,1350);x.fillStyle="#c2262d";x.font="700 30px system-ui,sans-serif";x.fillText("SHOGO MAKISHIMA TOOLS",80,130);
+ x.fillStyle="#e9dfcd";x.font="700 84px Georgia,serif";x.fillText(title,80,240);let y=380;
+ lines.slice(0,9).forEach((l,i)=>{x.font=(i===0?"700 58px":"400 46px")+" system-ui,sans-serif";x.fillStyle=i===0?"#e9dfcd":"#cfc5b3";let t=String(l),cut=false;
+  while(x.measureText(t).width>920&&t.length>4){t=t.slice(0,-1);cut=true}x.fillText(cut?t.trimEnd()+"...":t,80,y);y+=i===0?112:84});
+ x.fillStyle="#d6aa5c";x.font="400 40px system-ui,sans-serif";x.fillText("makishima1984.github.io/"+slug,80,1260);
+ c.toBlob(async b=>{if(!b){if(m)m.textContent="Could not make the picture on this device.";return}
+  const f=new File([b],slug+"-"+dayKey()+".png",{type:"image/png"});
+  try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title});return}}catch(e){if(e&&e.name==="AbortError")return}
+  const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=f.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);if(m)m.textContent="Picture saved to your downloads."},"image/png")}
 
 const KEY="watchlist-v1",ST=["Plan to watch","Watching","Finished","Dropped"],KINDS=["Anime","Series","Movie","Other"];let s=load(KEY,{items:[],tab:1});
 if(!Array.isArray(s.items))s.items=[];if(!(s.tab>=0&&s.tab<=3))s.tab=1;s.tab=Math.round(s.tab);
@@ -90,6 +106,7 @@ $("add").addEventListener("click",()=>{const t=$("title").value.trim().slice(0,8
  const st=Math.min(2,Math.max(0,+$("st").value||0)),eps=k==="Movie"?0:Math.round(n);
  s.items.unshift({t,k:KINDS.includes(k)?k:"Other",n:eps,e:st===2?eps:0,s:st,r:0});s.tab=st;$("title").value="";$("eps").value="";m.textContent="Added to "+ST[st]+".";store(KEY,s);render()});
 dataButtons(KEY,()=>s,()=>{s={items:[],tab:1};store(KEY,s);render()});render();
+$("share").addEventListener("click",()=>{const L=(()=>{if(!s.items.length)return null;const fin=s.items.filter(x=>x.s===2),now=s.items.filter(x=>x.s===1),top=fin.filter(x=>x.r).sort((a,b)=>b.r-a.r).slice(0,7);return[fin.length+" finished . "+now.length+" watching"].concat(top.length?top.map(x=>x.r+"/10   "+x.t):now.slice(0,7).map(x=>x.t+(x.n?"   ep "+x.e+"/"+x.n:"")))})();if(!L){$("shareMsg").textContent="Nothing to share yet.";return}$("shareMsg").textContent="";shareCard("Watchlist",L,"watchlist")});
 </script>
 </body>
 </html>
