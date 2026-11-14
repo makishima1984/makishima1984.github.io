@@ -21,12 +21,12 @@ input{width:100%;font:inherit;padding:12px 14px;border-radius:10px;border:1px so
 .term p{margin:4px 0}.aside{color:var(--soft);font-style:italic}
 .src{font:13px system-ui,sans-serif;color:var(--soft)}
 .hidden{display:none}#none{color:var(--soft)}
-button.theme{position:absolute;top:24px;right:16px;font:14px system-ui,sans-serif;background:none;border:1px solid var(--line);color:var(--soft);border-radius:999px;padding:6px 12px;cursor:pointer}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+button.theme{flex:none;font:14px system-ui,sans-serif;background:none;border:1px solid var(--line);color:var(--soft);border-radius:999px;padding:6px 12px;cursor:pointer}
 footer{margin-top:40px;font-size:14px;color:var(--soft)}a{color:var(--chalk)}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style></head><body><main>
-<button class="theme" id="t" type="button">light / dark</button>
-<div class="kicker">astronomy dictionary</div>
+<div class="top"><div class="kicker">astronomy dictionary</div><button class="theme" id="t" type="button">light / dark</button></div>
 <h1>Space words, <em>explained like a friend would</em></h1>
 <p class="lead">40 words you hear in space news, in plain English. Every one checked against NASA or IAU pages (the source link is under each).</p>
 <div class="bar"><input id="q" type="search" placeholder="Search: black hole, parsec, nebula..." aria-label="Search the dictionary"><div class="jump"><a href="#asteroid">A</a> <a href="#big-bang">B</a> <a href="#comet">C</a> <a href="#dark-energy">D</a> <a href="#eclipse">E</a> <a href="#galaxy">G</a> <a href="#kuiper-belt">K</a> <a href="#light-year">L</a> <a href="#magnitude">M</a> <a href="#nebula">N</a> <a href="#orbit">O</a> <a href="#parsec">P</a> <a href="#red-giant">R</a> <a href="#solar-flare">S</a> <a href="#telescope">T</a> <a href="#white-dwarf">W</a> <a href="#zenith">Z</a></div></div>
